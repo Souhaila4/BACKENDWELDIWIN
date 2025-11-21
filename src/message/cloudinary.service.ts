@@ -77,5 +77,25 @@ export class CloudinaryService {
       Readable.from(file.buffer).pipe(uploadStream);
     });
   }
+
+  /**
+   * Delete a file from Cloudinary by public_id
+   */
+  async deleteFile(publicId: string, resourceType: 'image' | 'video' | 'raw' = 'video'): Promise<void> {
+    if (!this.isConfigured) {
+      this.logger.warn('Cloudinary is not configured, skipping file deletion');
+      return;
+    }
+
+    try {
+      await cloudinary.uploader.destroy(publicId, {
+        resource_type: resourceType,
+      });
+      this.logger.log(`✅ Deleted file from Cloudinary: ${publicId}`);
+    } catch (error: any) {
+      this.logger.error(`Failed to delete file from Cloudinary: ${error?.message ?? 'Unknown error'}`);
+      // Don't throw - deletion of file from storage shouldn't block message deletion
+    }
+  }
 }
 

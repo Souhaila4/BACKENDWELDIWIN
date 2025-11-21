@@ -5,6 +5,7 @@ import * as crypto from 'crypto';
 import { Child, ChildDocument } from './schemas/child.schema';
 import { User, UserRole } from '../user/schemas/user.schema';
 import { Room, RoomDocument } from '../message/schemas/room.schema';
+import { Message, MessageDocument } from '../message/schemas/message.schema';
 import { CreateChildDto } from './dto/create-child.dto';
 import { UpdateChildDto } from './dto/update-child.dto';
 import { UpdateChildLocationDto } from './dto/update-child-location.dto';
@@ -15,6 +16,7 @@ export class ChildService {
     @InjectModel(Child.name) private childModel: Model<ChildDocument>,
     @InjectModel(User.name) private userModel: Model<any>,
     @InjectModel(Room.name) private roomModel: Model<RoomDocument>,
+    @InjectModel(Message.name) private messageModel: Model<MessageDocument>,
   ) {}
 
   async create(createChildDto: CreateChildDto, currentUser: any): Promise<Child> {
@@ -180,6 +182,21 @@ export class ChildService {
       }
     }
 
+    const childObjectId = new Types.ObjectId(id);
+
+    // Find all rooms associated with this child
+    const rooms = await this.roomModel.find({ child: childObjectId });
+    const roomIds = rooms.map(room => room._id);
+
+    // Delete all messages in those rooms
+    if (roomIds.length > 0) {
+      await this.messageModel.deleteMany({ room: { $in: roomIds } });
+    }
+
+    // Delete all rooms associated with this child
+    await this.roomModel.deleteMany({ child: childObjectId });
+
+    // Finally, delete the child
     await this.childModel.findByIdAndDelete(id);
   }
 

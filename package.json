@@ -18,7 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "vercel-build": "nest build"
+    "vercel-build": "nest build",
+    "cleanup:orphaned-rooms": "ts-node -r tsconfig-paths/register scripts/cleanup-orphaned-rooms.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

@@ -7,6 +7,7 @@ import { ChildController } from './child.controller';
 import { Child, ChildSchema } from './schemas/child.schema';
 import { User, UserSchema } from '../user/schemas/user.schema';
 import { Room, RoomSchema } from '../message/schemas/room.schema';
+import { Message, MessageSchema } from '../message/schemas/message.schema';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { Room, RoomSchema } from '../message/schemas/room.schema';
       { name: Child.name, schema: ChildSchema },
       { name: User.name, schema: UserSchema },
       { name: Room.name, schema: RoomSchema },
+      { name: Message.name, schema: MessageSchema },
     ]),
   ],
   controllers: [ChildController],

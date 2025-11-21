@@ -33,7 +33,7 @@ import { CloudinaryService } from './cloudinary.service';
   ],
   controllers: [MessageController],
   providers: [MessageService, ChatGateway, CloudinaryService],
-  exports: [MessageService],
+  exports: [MessageService, ChatGateway],
 })
 export class MessageModule {}
 

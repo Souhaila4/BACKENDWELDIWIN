@@ -7,6 +7,9 @@ import { UserModule } from './user/user.module';
 import { ChildModule } from './child/child.module';
 import { AuthModule } from './auth/auth.module';
 import { MessageModule } from './message/message.module';
+import { DangerZoneModule } from './danger-zone/danger-zone.module';
+import { TodoModule } from './todo/todo.module';
+import { SosAlertModule } from './sos-alert/sos-alert.module';
 
 @Module({
   imports: [
@@ -36,6 +39,9 @@ import { MessageModule } from './message/message.module';
     UserModule,
     ChildModule,
     MessageModule,
+    DangerZoneModule,
+    TodoModule,
+    SosAlertModule,
   ],
   controllers: [AppController],
   providers: [AppService],

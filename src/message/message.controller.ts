@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   InternalServerErrorException,
+  NotFoundException,
   Param,
   Post,
   Query,
@@ -343,5 +344,36 @@ export class MessageController {
     this.assertObjectId(roomId, 'roomId');
     this.assertObjectId(parentId, 'parentId');
     return this.messageService.removeInvitedParent(roomId, parentId, currentUser);
+  }
+
+  /**
+   * Delete a message from a room
+   * Only the sender can delete their own message
+   */
+  @Delete('message/:messageId')
+  @ApiOperation({ summary: 'Delete a message (only sender can delete their own message)' })
+  @ApiParam({ name: 'messageId', description: 'Message ID' })
+  @ApiResponse({ status: 200, description: 'Message deleted successfully' })
+  @ApiResponse({ status: 403, description: 'You can only delete your own messages' })
+  @ApiResponse({ status: 404, description: 'Message not found' })
+  async deleteMessage(
+    @Param('messageId') messageId: string,
+    @CurrentUser() currentUser: any,
+  ) {
+    this.assertObjectId(messageId, 'messageId');
+    
+    // Get message to find room ID for broadcasting
+    const message = await this.messageService.getMessageById(messageId);
+    if (!message) {
+      throw new NotFoundException('Message not found');
+    }
+    
+    // Delete the message
+    await this.messageService.deleteMessage(messageId, currentUser);
+    
+    // Broadcast deletion via WebSocket
+    this.chatGateway.broadcastMessageDeleted(message.room.toString(), messageId);
+    
+    return { success: true, message: 'Message deleted successfully' };
   }
 }
